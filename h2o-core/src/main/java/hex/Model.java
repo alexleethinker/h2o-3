@@ -1756,7 +1756,6 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
         BufferedString bStr = new BufferedString();
         for (int row = 0; row < fr.numRows(); row++) { // For all rows, single-threaded
           if (rnd.nextDouble() >= fraction) continue;
-          if (genmodel.getModelCategory() == ModelCategory.AutoEncoder) continue;
 
           // Generate input row
           for (int col = 0; col < features.length; col++) {
@@ -1793,6 +1792,9 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
             if (col == 0 && omap != null) d = omap[(int) d]; // map categorical response to scoring domain
             double d2 = Double.NaN;
             switch (genmodel.getModelCategory()) {
+              case AutoEncoder:
+                d2 = ((AutoEncoderModelPrediction) p).reconstructed[col];
+                break;
               case Clustering:
                 d2 = ((ClusteringModelPrediction) p).cluster;
                 break;
@@ -1824,6 +1826,8 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
                 System.err.println( (i == 0 ? "POJO" : "MOJO") + " EasyPredict Predictions mismatch for row " + rowData);
                 System.err.println("  Expected predictions: " + Arrays.toString(expected_preds));
                 System.err.println("  Actual predictions:   " + Arrays.toString(actual_preds));
+                double errv = Math.abs(actual_preds[actual_preds.length-1]-expected_preds[expected_preds.length-1]);
+                System.err.println(" Difference: "+errv); // print actual difference
               }
               break;
             }
