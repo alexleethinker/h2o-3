@@ -432,8 +432,10 @@ public class DeepLearningProstateTest extends TestUtil {
                                                 pred = model2.score(valid);
                                                 // Build a POJO, validate same results
                                                 Log.info("testJavaScoring ln 434");
-                                                model2.testJavaScoring(valid, pred, 1e-8,1e-6); // run with tigher margin
-                                                 Assert.assertTrue(model2.testJavaScoring(frame, pred, 1e-3,1e-3));
+
+                                                if (!model2.testJavaScoring(valid, pred, 1e-8, 1e-6))
+                                                  model2.testJavaScoring(valid, pred, 1e-8, 1e-6); // run with tigher margin
+                                                Assert.assertTrue(model2.testJavaScoring(frame, pred, 1e-3, 1e-3));
                                               } finally {
                                                 if (pred != null) pred.delete();
                                               }
